@@ -74,6 +74,8 @@ define('X-LIGHTTPD-SEND-FILE',  20);
 if(!defined('E_DEPRECATED'))      define('E_DEPRECATED', 8192);
 if(!defined('E_USER_DEPRECATED')) define('E_USER_DEPRECATED', 16384);
 
+$routes = array();
+
 
 ## SETTING BASIC SECURITY _____________________________________________________
 
@@ -1123,7 +1125,7 @@ function dispatch_delete($path_or_array, $function, $options = array())
  */
 function route()
 {
-  static $routes = array();
+  global $routes;
   $nargs = func_num_args();
   if( $nargs > 0)
   {
