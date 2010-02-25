@@ -331,6 +331,7 @@ function run($env = null)
   option('session',            LIM_SESSION_NAME); // true, false or the name of your session
   option('encoding',           'utf-8');
   option('gzip',               false);
+  option('autorender',         false);
   option('x-sendfile',         0); // 0: disabled, 
                                    // X-SENDFILE: for Apache and Lighttpd v. >= 1.5,
                                    // X-LIGHTTPD-SEND-FILE: for Apache and Lighttpd v. < 1.5
@@ -407,10 +408,9 @@ function run($env = null)
         call_if_exists('before', $route);
 
         # 6.4 Call matching controller function and output result
-        if($output = call_user_func_array($route['function'], array_values($route['params'])))
-        {
-          echo after(error_notices_render() . $output);
-        }
+        $output = call_user_func_array($route['function'], array_values($route['params']));
+        if(is_null($output) && option('autorender')) $output = call_if_exists('autorender', $route);
+        echo after(error_notices_render() . $output, $route);
       }
       else halt(SERVER_ERROR, "Routing error: undefined function '{$route['function']}'", $route);      
     }
@@ -1274,7 +1274,9 @@ function route_build($method, $path_or_array, $func, $options = array())
  * @access private
  * @param string $method 
  * @param string $path
- * @return array,false
+ * @return array,false route array has same keys as route returned by 
+ *  {@link route_build()} ("method", "pattern", "names", "function", "options")
+ *  + the processed "params" key
  */
 function route_find($method, $path)
 {
