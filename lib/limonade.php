@@ -74,9 +74,6 @@ define('X-LIGHTTPD-SEND-FILE',  20);
 if(!defined('E_DEPRECATED'))      define('E_DEPRECATED', 8192);
 if(!defined('E_USER_DEPRECATED')) define('E_USER_DEPRECATED', 16384);
 
-$routes = array();
-
-
 ## SETTING BASIC SECURITY _____________________________________________________
 
 # A. Unsets all global variables set from a superglobal array
@@ -1125,7 +1122,7 @@ function dispatch_delete($path_or_array, $function, $options = array())
  */
 function route()
 {
-  global $routes;
+	static $routes = array();
   $nargs = func_num_args();
   if( $nargs > 0)
   {
