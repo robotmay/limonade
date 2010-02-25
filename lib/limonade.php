@@ -1369,7 +1369,15 @@ function render($content_or_func, $layout = '', $locals = array())
   {
     ob_start();
     extract($vars);
-    include $view_path;
+    if (option('rewrite_short_tags') == true && (boolean)@ini_get('short_open_tag') === false)
+		{
+			$view = file_get_contents($view_path);
+			echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', $view)));
+		}
+		else
+		{
+			include($view_path);
+		}
     $content = ob_get_clean();
   }
   else
